@@ -1,2 +1,2 @@
 # cog-cli
-admin UI for cognitiven
+client UI for cognitiven
