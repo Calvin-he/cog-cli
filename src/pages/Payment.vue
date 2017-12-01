@@ -39,7 +39,7 @@
     <div class="footer">
       <div class="columns is-mobile">
         <div class="column">
-          <a class=" button is-primary is-fullwidth" :class="{'is-loading': paying}" @click="startWxPay" v-if="!isPaid">付款</a>
+          <a class=" button is-primary is-fullwidth" :class="{'is-loading': paying}" @click="startWxPay" v-if="!isPaid()">付款</a>
           <a class="button is-primary is-outlined is-fullwidth" @click.stop.prevent="gotoLessonList" v-else>查看课程列表</a>
         </div>
       </div>
@@ -79,9 +79,6 @@ export default {
           return '未知'
       }
     },
-    isPaid () {
-      return this.series.paidInfo != null
-    },
     series () {
       return this.$store.state.series || {}
     }
@@ -96,6 +93,11 @@ export default {
     })
   },
   methods: {
+    isPaid () {
+      let user = this.$auth.user()
+      let series = user.paidSeries.find(s => s.seriesId === this.series._id)
+      return series != null
+    },
     startWxPay () {
       this.paying = true
       if (/micromessenger/.test(navigator.userAgent.toLowerCase())) {
@@ -112,22 +114,24 @@ export default {
           console.log(res.status)
           this.paying = false
           this.$store.dispatch('showMessage', { msg: '支付成功!', level: 'info' })
-          this.$router.push({ name: 'LessonList', params: { seriesId: this.seriesId, fresh: true } })
-          // window.location.reload()
+          this.$router.push({ name: 'LessonList', params: { seriesId: this.seriesId} })
+          window.location.reload()
         })
       }
     },
 
     _checkPayStateAfterSuccess (outTradeNo) {
       setTimeout(() => {
+        let count = 0
         this.$store.dispatch('getPayState', { seriesId: this.seriesId, outTradeNo: outTradeNo }).then(state => {
-          if (state === 'prepay') {
-            this._checkPayStateAfterSuccess(outTradeNo)
-          } else if (state === 'success') {
+          count++
+          if (state === 'success') {
             this.paying = false
             this.$store.dispatch('showMessage', { msg: '支付成功!', level: 'info' })
-            this.$router.push({ name: 'LessonList', params: { seriesId: this.seriesId, fresh: true } })
-            // window.location.reload()
+            this.$router.push({ name: 'LessonList', params: {seriesId: this.seriesId} })
+            window.location.reload()
+          } else if (count <= 10) {
+            this._checkPayStateAfterSuccess(outTradeNo)
           } else {
             this.paying = false
             this.$store.dispatch('showMessage', { msg: '支付失败！', level: 'warning' })

@@ -20,7 +20,7 @@
     </div>
 
     <div class="footer">
-      <div class="columns is-mobile" v-if="!isPaid">
+      <div class="columns is-mobile" v-if="!isPaid()">
         <div class="column">
           <a class=" button is-primary is-outlined" @click="gotoLessonList">试课</a>
         </div>
@@ -57,9 +57,6 @@ export default {
   computed: {
     seriesUrl () {
       return '/seriesintro/' + this.seriesId
-    },
-    isPaid () {
-      return this.series.paidInfo != null
     },
     series () {
       return this.$store.state.series || {}
@@ -98,6 +95,11 @@ export default {
       } else {
         this.$router.push({ name: 'Payment', params: { seriesId: this.series._id } })
       }
+    },
+    isPaid () {
+      let user = this.$auth.user()
+      let series = user.paidSeries.find(s => s.seriesId === this.series._id)
+      return series != null
     }
   },
 

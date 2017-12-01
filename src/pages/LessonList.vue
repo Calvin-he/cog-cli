@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <cogen-header :url="seriesUrl" :title="series.title">
-        <router-link slot="right" class="is-bold is-info" v-if="!isPaid"
+        <router-link slot="right" class="is-bold is-info" v-if="!isPaid()"
           :to="{name: 'Payment', params: {seriesId: seriesId}}">购买</router-link>
     </cogen-header>
     <div class="section">
@@ -68,9 +68,6 @@ export default {
         return []
       }
     },
-    isPaid () {
-      return this.series.paidInfo != null
-    },
     series () {
       return this.$store.state.series || {}
     }
@@ -92,6 +89,11 @@ export default {
     this.audio.addEventListener('ended', this.eventPlayEnd, false)
   },
   methods: {
+    isPaid () {
+      let user = this.$auth.user()
+      let series = user.paidSeries.find(s => s.seriesId === this.series._id)
+      return series != null
+    },
     gotoLesson (lesson) {
       if (lesson.mediaPath) {
         this.$router.push({ name: 'Lesson', params: { lessonId: lesson._id, seriesId: this.series._id } })

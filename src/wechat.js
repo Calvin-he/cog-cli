@@ -4,11 +4,11 @@ import Vue from 'vue'
 var api = {
   config () {
     Vue.axios.post('/wechat/config', {
-      debug: false,
+      debug: true,
       jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage', 'chooseWXPay'],
       url: window.location.href
     }).then(res => {
-      wx.config(res.data.params)
+      wx.config(res.data)
       wx.error(res => {
         console.log(res)
       })

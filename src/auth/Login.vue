@@ -103,6 +103,7 @@ export default {
         let portStr = location.port ? (':' + location.port) : ''
         let fullPath = encodeURIComponent(location.protocol + '//' + location.hostname + portStr + location.pathname + '#' + redirect.from.path)
         this.axios.get(`/wechat/authorize_url?redirect_url=${fullPath}&state=${wxstate}`).then(res => {
+          console.log(res)
           location.href = res.data.authorize_url
         })
       } else {
