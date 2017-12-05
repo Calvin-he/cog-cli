@@ -90,15 +90,18 @@ export default {
   },
   methods: {
     isPaid () {
-      let user = this.$auth.user()
-      let series = user.paidSeries.find(s => s.seriesId === this.series._id)
-      return series != null
+      // let user = this.$auth.user()
+      return this.series.learningProgress != null
     },
     gotoLesson (lesson) {
       if (lesson.mediaPath) {
         this.$router.push({ name: 'Lesson', params: { lessonId: lesson._id, seriesId: this.series._id } })
       } else {
-        this.$store.dispatch('showMessage', { msg: lesson._locked_msg, level: 'warning' })
+        if (this.series.learningProgress == null) {
+          this.$store.dispatch('showMessage', { msg: '您需要购买后才能查看！', level: 'warning' })
+        } else {
+          this.$store.dispatch('showMessage', { msg: '每天只能查看一节课哦！', level: 'warning' })
+        }
       }
     },
 

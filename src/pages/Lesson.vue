@@ -24,6 +24,11 @@ import AudioPlayer from '../components/AudioPlayer'
 import CogenHeader from '../components/CogenHeader'
 import Comments from '../components/Comments'
 import wechat from '../wechat'
+import moment from 'moment'
+
+function isToday (theDate) {
+  return (theDate != null) && (moment(theDate).isSame(moment(), 'day'))
+}
 
 export default {
   name: 'Lesson',
@@ -56,9 +61,9 @@ export default {
       this.$store.dispatch('getLesson', { seriesId: this.seriesId, lessonId: this.lessonId }).then((lesson) => {
         this.lesson = lesson
         wechat.wxShare({title: this.lesson.title, desc: this.series.title})
-        if (this.series.paidInfo && this.lesson._state === 'open') {
-          this.$store.dispatch('visitLesson', {seriesId: this.seriesId, lessonId: this.lessonId}).then(() => {
-            this.$set(this.lesson, '_state', 'visited')
+        if (this.series.learingProgress != null && !isToday(this.series.learningProgress.dateOfLastVisitLesson)) {
+          this.$store.dispatch('forwardLearningProgress', {seriesId: this.seriesId}).then((learningProgress) => {
+             // TODO set new learning progress for series
           })
         }
       })

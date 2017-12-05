@@ -94,9 +94,8 @@ export default {
   },
   methods: {
     isPaid () {
-      let user = this.$auth.user()
-      let series = user.paidSeries.find(s => s.seriesId === this.series._id)
-      return series != null
+      // let user = this.$auth.user()
+      return this.series.learningProgress != null
     },
     startWxPay () {
       this.paying = true
@@ -114,7 +113,7 @@ export default {
           console.log(res.status)
           this.paying = false
           this.$store.dispatch('showMessage', { msg: '支付成功!', level: 'info' })
-          this.$router.push({ name: 'LessonList', params: { seriesId: this.seriesId} })
+          this.$router.push({ name: 'LessonList', params: {seriesId: this.seriesId} })
           window.location.reload()
         })
       }

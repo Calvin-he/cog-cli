@@ -97,9 +97,7 @@ export default {
       }
     },
     isPaid () {
-      let user = this.$auth.user()
-      let series = user.paidSeries.find(s => s.seriesId === this.series._id)
-      return series != null
+      return this.series.learningProgress != null
     }
   },
 

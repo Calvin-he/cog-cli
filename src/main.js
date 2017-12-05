@@ -58,15 +58,15 @@ new Vue({
   beforeMount () {
     // Add a response interceptor
     Vue.axios.interceptors.response.use(function (response) {
-      return response
-    }, (err) => {
-      if (err.response.status === 403) {
+      if (response.status === 401) {
         Vue.$auth.logout({
           redirect: '/login',
           makeRequest: false
         })
+      } else if (response.status >= 400) {
+        throw new Error(response.data)
       } else {
-        return err
+        return response
       }
     })
   }

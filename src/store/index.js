@@ -1,58 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import moment from 'moment'
 
 Vue.use(Vuex)
-
-function _setStateOfLessons (series, origLessons) {
-  let paidInfo = series.paidInfo
-  if (!paidInfo) {
-    origLessons.forEach(les => {
-      if (les.mediaPath != null) {
-        les._state = 'open'
-      } else {
-        les.mediaPath = null
-        les._state = 'locked'
-        les._locked_msg = 'Sorry, 购买后才能查看哦'
-      }
-    })
-    return
-  }
-
-  if (paidInfo.lessonIdOfLastVisited) {
-    let idxOfLastVisited = -1
-    origLessons.forEach((les, idx) => {
-      if (idxOfLastVisited === -1) {
-        les._state = 'visited'
-      } else if (idx === idxOfLastVisited + 1) {
-        if (moment(paidInfo.dateOfLastVisited).isSame(moment(), 'day')) {
-          les.mediaPath = null
-          les._state = 'locked'
-          les._locked_msg = '每天只能看一节课， 多复习下前面的课程哦。'
-        } else {
-          les._state = 'open'
-        }
-      } else {
-        les.mediaPath = null
-        les._state = 'locked'
-        les._locked_msg = '每天只能看一节课， 多复习下前面的课程哦。'
-      }
-      if (paidInfo.lessonIdOfLastVisited === les._id) {
-        idxOfLastVisited = idx
-      }
-    })
-  } else {
-    origLessons.forEach((les, idx) => {
-      if (idx === 0) {
-        les._state = 'open'
-      } else {
-        les.mediaPath = null
-        les._state = 'locked'
-        les._locked_msg = '每天只能看一节课， 多复习前面的课程哦。'
-      }
-    })
-  }
-}
 
 const state = {
   series: {lessons: []},
@@ -79,7 +28,6 @@ const actions = {
       } else {
         return Vue.axios.get(`/series/${seriesId}/lessons`).then((response) => {
           let lessons = response.data
-          _setStateOfLessons(series, lessons)
           Vue.set(series, 'lessons', lessons)
           return series.lessons
         })
@@ -99,8 +47,8 @@ const actions = {
       }
     })
   },
-  visitLesson ({dispatch, state}, {seriesId, lessonId}) {
-    Vue.axios.put(`/series/${seriesId}/lessons/${lessonId}/visitlesson`).then(response => {
+  forwardLearningProgress ({dispatch, state}, {seriesId}) {
+    Vue.axios.put(`/series/${seriesId}/forward-learning-progress`).then(response => {
       return response.data
     })
   },
