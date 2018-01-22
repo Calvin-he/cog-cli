@@ -63,7 +63,7 @@ export default {
     },
     lessonList () {
       if (this.$store.state.series && this.$store.state.series.lessons) {
-        return [...this.$store.state.series.lessons].reverse()
+        return this.$store.state.series.lessons
       } else {
         return []
       }

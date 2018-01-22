@@ -5,3 +5,4 @@ dist/
 test/unit/coverage
 test/e2e/reports
 .vscode/
+package-lock.json

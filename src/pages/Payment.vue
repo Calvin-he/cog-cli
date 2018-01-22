@@ -119,18 +119,16 @@ export default {
       }
     },
 
-    _checkPayStateAfterSuccess (outTradeNo) {
+    _checkPayStateAfterSuccess (outTradeNo, count = 0) {
       setTimeout(() => {
-        let count = 0
         this.$store.dispatch('getPayState', { seriesId: this.seriesId, outTradeNo: outTradeNo }).then(state => {
-          count++
           if (state === 'success') {
             this.paying = false
             this.$store.dispatch('showMessage', { msg: '支付成功!', level: 'info' })
             this.$router.push({ name: 'LessonList', params: {seriesId: this.seriesId} })
             window.location.reload()
           } else if (count <= 10) {
-            this._checkPayStateAfterSuccess(outTradeNo)
+            this._checkPayStateAfterSuccess(outTradeNo, count + 1)
           } else {
             this.paying = false
             this.$store.dispatch('showMessage', { msg: '支付失败！', level: 'warning' })
