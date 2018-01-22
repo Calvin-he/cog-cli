@@ -102,7 +102,7 @@ export default {
       if (/micromessenger/.test(navigator.userAgent.toLowerCase())) {
         this.$store.dispatch('getSeriesPayParams', { seriesId: this.seriesId }).then((payparams) => {
           wx.pay(payparams, (res) => {
-            this._checkPayStateAfterSuccess(payparams.out_trade_no)
+            this._checkPayStateAfterSuccess()
           }, (res) => {
             this.paying = false
             this.$store.dispatch('showMessage', { msg: '支付失败!', level: 'warning' })
@@ -119,16 +119,16 @@ export default {
       }
     },
 
-    _checkPayStateAfterSuccess (outTradeNo, count = 0) {
+    _checkPayStateAfterSuccess (count = 0) {
       setTimeout(() => {
-        this.$store.dispatch('getPayState', { seriesId: this.seriesId, outTradeNo: outTradeNo }).then(state => {
+        this.$store.dispatch('getPayState', { seriesId: this.seriesId }).then(state => {
           if (state === 'success') {
             this.paying = false
             this.$store.dispatch('showMessage', { msg: '支付成功!', level: 'info' })
             this.$router.push({ name: 'LessonList', params: {seriesId: this.seriesId} })
             window.location.reload()
           } else if (count <= 10) {
-            this._checkPayStateAfterSuccess(outTradeNo, count + 1)
+            this._checkPayStateAfterSuccess(count + 1)
           } else {
             this.paying = false
             this.$store.dispatch('showMessage', { msg: '支付失败！', level: 'warning' })

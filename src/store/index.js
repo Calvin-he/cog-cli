@@ -75,8 +75,8 @@ const actions = {
     })
   },
 
-  getPayState ({dispatch}, {seriesId, outTradeNo}) {
-    return Vue.axios.get(`/series/${seriesId}/check_paystate?out_trade_no=${outTradeNo}`).then(response => {
+  getPayState ({dispatch}, {seriesId}) {
+    return Vue.axios.get(`/series/${seriesId}/check_paystate`).then(response => {
       return response.data.state
     })
   },
