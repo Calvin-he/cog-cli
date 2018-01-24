@@ -28,6 +28,12 @@ const actions = {
       } else {
         return Vue.axios.get(`/series/${seriesId}/lessons`).then((response) => {
           let lessons = response.data
+          if (series.learningProgress != null) {
+            let curProgress = series.learningProgress.curProgress
+            if (curProgress < lessons.length && lessons[curProgress].content) {
+              lessons[curProgress].unread = true
+            }
+          }
           Vue.set(series, 'lessons', lessons)
           return series.lessons
         })
