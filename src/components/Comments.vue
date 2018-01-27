@@ -15,13 +15,16 @@
         </p>
       </figure>
       <div class="media-content">
-        <strong>{{c.userNickname}}</strong>
+        <div class="level is-mobile">
+          <div class="level-left"><strong>{{c.userNickname}}</strong></div>
+          <div class="level-right">{{c.created | datetimeFormat}}</div>
+        </div>    
         <p>
           {{c.content}}
         </p>
       </div>
-      <div class="media-right">{{c.created | datetimeFormat}} 
-        <a class="delete is-warning is-large" @click="deleteComment(c._id)" v-if="canDelete(c.username)">    
+      <div class="media-right">
+        <a class="button is-warning delete is-medium" @click="deleteComment(c._id)" v-if="canDelete(c.userId)">    
         </a>
       </div>
     </div>
@@ -110,9 +113,9 @@ export default {
         this.commentList = this.commentList.filter(c => c._id !== commentId)
       })
     },
-    canDelete (username) {
+    canDelete (userId) {
       let user = this.$auth.user()
-      return user.roles.indexOf('ROLE_ADMIN') !== -1 || user.username === username
+      return user.roles.indexOf('ROLE_ADMIN') !== -1 || user._id === userId
     }
 
   },
@@ -124,5 +127,8 @@ export default {
 <style scoped>
 #comment-list {
   background-color: ghostwhite;
+}
+.media-content {
+  word-break: break-word;
 }
 </style>
