@@ -17,10 +17,11 @@
             </a>
           </div>
           <div class="media-content" @click.stop="gotoLesson(lesson)">
-            <h4 class="subtitle is-6">{{lesson.title}}</h4>
+            <h4 class="">{{lesson.title}}</h4>
+            <span class="icon has-text-info"><i class="fa fa-eye"></i></span> {{lesson.visitedCount}}
           </div>
           <div class="media-right" @click.stop="gotoLesson(lesson)">
-            <span class=" icon ">
+            <span class="icon">
               <i class="fa fa-angle-right "></i>
             </span>
           </div>
@@ -152,5 +153,8 @@ export default {
 
 .lesson-list-item {
   align-items: center;
+}
+.media + .media {
+  margin-top: 0;
 }
 </style>

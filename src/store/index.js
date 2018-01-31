@@ -92,6 +92,10 @@ const actions = {
     setTimeout(() => {
       commit('SET_MESSAGE_EVENT', null)
     }, 1500)
+  },
+
+  incVisitedCount ({commit}, {lessonId}) {
+    return Vue.axios.put(`/lessons/${lessonId}/action/inc_visited_count`)
   }
 }
 

@@ -14,6 +14,12 @@
       <audio-player :audio-url="lesson.mediaPath2" title="" :source="series.title" class="audio-player" v-if="lesson.mediaPath2"></audio-player>
     </div>
 
+    <div class="visited-count">
+      <span class="icon has-text-info">
+        <i class="fa fa-eye"></i>
+      </span>
+      {{lesson.visitedCount}}
+    </div>
     <Comments :lessonId="lessonId" :seriesId="seriesId"></Comments>
  
   </div>
@@ -56,6 +62,9 @@ export default {
       this.$store.dispatch('getLesson', { seriesId: this.seriesId, lessonId: this.lessonId }).then((lesson) => {
         this.lesson = lesson
         wechat.wxShare({title: this.lesson.title, desc: this.series.title})
+        this.$store.dispatch('incVisitedCount', {lessonId: this.lessonId}).then(() => {
+          this.lesson.visitedCount += 1
+        })
         if (this.lesson.unread) {
           this.$store.dispatch('forwardLearningProgress', {seriesId: this.seriesId}).then((learningProgress) => {
             this.series.learingProgress = learningProgress
@@ -78,5 +87,10 @@ export default {
 .audio-player {
   margin-top: 10px;
   margin-bottom: 10px;
+}
+.visited-count {
+  float: left;
+  margin-top: 1rem;
+  margin-left: 2rem;
 }
 </style>
