@@ -10,16 +10,13 @@
     </div>
     <hr style="margin: 0">
     <div class="section">
-      <div class="columns is-mobile">
-        <span class="column is-8">
-          <h4 class="title is-4">购买须知</h4>
-        </span>
-        <span class="column is-4">价格: ￥{{series.price}}</span>
-      </div>
-      <p v-html="series.noticeForPurchase"></p>
+      <h4 class="title is-4">购买须知</h4>
+      <div>价格: ￥{{series.price}}</div>
+      <p v-html="series.noticeForPurchase"></p> 
+      <p>已有{{series.purchaseCount}}人购买此课程</p>
     </div>
 
-    <div class="footer">
+    <div class="footer">  
       <div class="columns is-mobile" v-if="!isPaid()">
         <div class="column">
           <a class=" button is-primary is-outlined" @click="gotoLessonList">试课</a>

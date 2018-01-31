@@ -62,9 +62,13 @@ export default {
       this.$store.dispatch('getLesson', { seriesId: this.seriesId, lessonId: this.lessonId }).then((lesson) => {
         this.lesson = lesson
         wechat.wxShare({title: this.lesson.title, desc: this.series.title})
-        this.$store.dispatch('incVisitedCount', {lessonId: this.lessonId}).then(() => {
-          this.lesson.visitedCount += 1
-        })
+
+        if (!this.lesson._visited) {
+          this.$store.dispatch('incVisitedCount', {lessonId: this.lessonId}).then(() => {
+            this.lesson.visitedCount += 1
+            this.lesson._visited = true
+          })
+        }
         if (this.lesson.unread) {
           this.$store.dispatch('forwardLearningProgress', {seriesId: this.seriesId}).then((learningProgress) => {
             this.series.learingProgress = learningProgress

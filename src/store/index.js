@@ -95,7 +95,7 @@ const actions = {
   },
 
   incVisitedCount ({commit}, {lessonId}) {
-    return Vue.axios.put(`/lessons/${lessonId}/action/inc_visited_count`)
+    return Vue.axios.put(`/lessons/${lessonId}/action/inc-visited-count`)
   }
 }
 
