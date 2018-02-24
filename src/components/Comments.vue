@@ -17,15 +17,38 @@
       <div class="media-content">
         <div class="level is-mobile">
           <div class="level-left"><strong>{{c.userNickname}}</strong></div>
-          <div class="level-right">{{c.created | datetimeFormat}}</div>
+          <div class="level-right">
+            <span class="icon has-text-danger" style="margin-right:10px" title="删除" @click="deleteComment(c._id)" v-if="canDelete(c.userId)">
+              <i class="fa fa-remove"></i>
+            </span>
+            <span class="icon has-text-success" style="margin-right:10px" @click="replyComment(c)" v-if="canReply(c.userId)">
+              <i class="fa fa-reply"></i>
+            </span>
+            {{c.created | datetimeFormat}}       
+          </div>
         </div>    
-        <p>
-          {{c.content}}
-        </p>
+        <p>{{c.content}}</p>
+        <div class="media" v-for="(reply, index) in c.replies" :key=index>
+          <figure class="media-left">
+          <p class="image is-32x32">
+            <img :src="reply.userAvatar">
+          </p>
+          </figure>
+          <div class="media-content">
+            <div class="level is-mobile">
+              <div class="level-left"><strong>{{reply.userNickname}}</strong></div>
+              <div class="level-right">
+                <span class="icon has-text-danger" style="margin-right:10px" @click="deleteReply(c, index)" v-if="canReply(c.userId)">
+                  <i class="fa fa-remove"></i>
+                </span>
+                {{reply.created | datetimeFormat}}
+              </div>
+            </div>    
+            <p>
+              {{reply.content}}
+            </p>
+          </div>
       </div>
-      <div class="media-right">
-        <a class="button is-warning delete is-medium" @click="deleteComment(c._id)" v-if="canDelete(c.userId)">    
-        </a>
       </div>
     </div>
   
@@ -67,8 +90,8 @@ export default {
       comment: '',
       showCommentModal: false,
       commentList: [],
-      lessonTitle: ''
-
+      lessonTitle: '',
+      repliedComment: null
     }
   },
 
@@ -87,6 +110,7 @@ export default {
   methods: {
     addComment () {
       this.showCommentModal = true
+      this.repliedComment = null
       setTimeout(() => {
         this.$refs.commentTextarea.focus()
       }, 300)
@@ -95,13 +119,27 @@ export default {
       if (this.comment.length <= 3 || this.comment.length >= 500) {
         return false
       }
-      this.$store.dispatch('addComment', { lessonId: this.lessonId, content: this.comment }).then((comment) => {
-        this.commentList = [comment, ...this.commentList]
-        this.showCommentModal = false
-        this.comment = ''
-      }).catch(err => {
-        console.warn(err)
-      })
+      if (this.repliedComment == null) {
+        this.$store.dispatch('addComment', { lessonId: this.lessonId, content: this.comment }).then((comment) => {
+          this.commentList = [comment, ...this.commentList]
+          this.showCommentModal = false
+          this.comment = ''
+        }).catch(err => {
+          console.warn(err)
+        })
+      } else {
+        let user = this.$auth.user()
+        let comment = {
+          content: this.comment,
+          userNickname: user.nickname,
+          userAvatar: user.avatar
+        }
+        this.$store.dispatch('replyComment', {lessonId: this.lessonId, commentId: this.repliedComment._id, reply: comment}).then((reply) => {
+          this.repliedComment.replies.push(reply)
+          this.showCommentModal = false
+          this.comment = ''
+        })
+      }
     },
     loadComments () {
       this.$store.dispatch('listComments', { lessonId: this.lessonId }).then((comments) => {
@@ -116,8 +154,19 @@ export default {
     canDelete (userId) {
       let user = this.$auth.user()
       return user.roles.indexOf('ROLE_ADMIN') !== -1 || user._id === userId
+    },
+    canReply (comment) {
+      return this.$auth.user().roles.indexOf('ROLE_ADMIN') !== -1
+    },
+    replyComment (comment) {
+      this.showCommentModal = true
+      this.repliedComment = comment
+    },
+    deleteReply (comment, index) {
+      this.$store.dispatch('deleteReply', {lessonId: this.lessonId, commentId: comment._id, index: index}).then(() => {
+        comment.replies.splice(index, 1)
+      })
     }
-
   },
   components: {
     InfiniteLoading

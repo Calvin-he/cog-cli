@@ -96,7 +96,18 @@ const actions = {
 
   incVisitedCount ({commit}, {lessonId}) {
     return Vue.axios.put(`/lessons/${lessonId}/action/inc-visited-count`)
+  },
+
+  replyComment ({commit}, {lessonId, commentId, reply}) {
+    return Vue.axios.put(`/lessons/${lessonId}/comments/${commentId}/reply`, reply).then(res => {
+      return res.data
+    })
+  },
+
+  deleteReply ({commit}, {lessonId, commentId, index}) {
+    return Vue.axios.delete(`/lessons/${lessonId}/comments/${commentId}/reply/${index}`)
   }
+
 }
 
 // define the possible mutations that can be applied to our state
