@@ -56,6 +56,9 @@ export default {
   activated () {
     this.loadLesson()
   },
+  deactivated () {
+    this.lesson = { mediaPath: '', mediaPath2: '' }
+  },
 
   methods: {
     loadLesson () {

@@ -76,6 +76,7 @@ export default {
 
   deactivated () {
     this.stop()
+    this.audio.src = null
   },
 
   methods: {

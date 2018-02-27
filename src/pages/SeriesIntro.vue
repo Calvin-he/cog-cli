@@ -11,9 +11,11 @@
     <hr style="margin: 0">
     <div class="section">
       <h4 class="title is-4">购买须知</h4>
-      <div>价格: ￥{{series.price}}</div>
+      <div>价格: ￥{{series.price}}  
+        <span class="icon has-text-primary is-pulled-right"><i class="fa fa-user"></i>  {{series.purchaseCount}}</span>
+      </div>
       <p v-html="series.noticeForPurchase"></p> 
-      <p>已有{{series.purchaseCount}}人购买此课程</p>
+      <p> 已有{{series.purchaseCount}}人购买此课程</p>
     </div>
 
     <div class="footer">  
@@ -73,7 +75,9 @@ export default {
   mounted () {
     let seriesId = this.seriesId
     this.$store.dispatch('getSeries', { seriesId }).then((series) => {
-       // this.series = series
+      if (this.isPaid()) {
+        this.$router.push({name: 'LessonList', params: {seriesId}})
+      }
     }).catch((error) => {
       console.error(error)
       // this.series = { title: '课程不存在' }
